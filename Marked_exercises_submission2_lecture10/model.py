@@ -28,7 +28,15 @@ class GeneratorBlock(nn.Module):
         '''
         layers = []
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        layers.append(nn.Upsample())
+        layers.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels,\
+                                kernel_size=kernel_size, stride=stride, padding=padding))
+        
+        if batchnorm:
+            layers.append(nn.BatchNorm2d(out_channels))
+        
+        if activation:
+            layers.append(nn.ReLU())
         ### END SOLUTION
         self.deconv_block = nn.Sequential(*layers)
 
@@ -57,7 +65,7 @@ class Generator(torch.nn.Module):
         # stride_sizes = [...]
         # padding_sizes = [...]
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        # raise NotImplementedError()
         ### END SOLUTION
 
         # filters: [1024, 512, 256]
@@ -113,7 +121,14 @@ class DiscriminatorBlock(nn.Module):
         super().__init__()
         layers = []
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        
+        layers.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels,\
+                                kernel_size=kernel_size, stride=stride, padding=padding))
+        if instancenorm:
+            layers.append(nn.InstanceNorm2d(out_channels, affine=True))
+        if activation:
+            layers.append(nn.LeakyReLU(0.2, inplace=True))
+        
         ### END SOLUTION
         self.conv_block = nn.Sequential(*layers)
 

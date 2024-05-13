@@ -17,7 +17,7 @@ def set_model_require_grad(model, require_grad):
     A function that goes through every parameter of a model and sets them to parameter.requires_grad=requires_grad mode
     '''
     for param in model.parameters():
-        param.require_grad = require_grad
+        param.requires_grad = require_grad
 
 
 def plot_generated_images(images, results_path=None, show=True):
@@ -115,12 +115,13 @@ class WGANTrainer():
         weights should be clamped to a fixed box (W = [−0.01, 0.01]^l) after each gradient update
         '''
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        for p in self.model_disc.parameters():
+            p.data.clamp_(-self.weight_cliping, self.weight_cliping)
         ### END SOLUTION
 
     def gen_step(self,
                  ### BEGIN SOLUTION
-                 raise NotImplementedError()
+                 z
                  ### END SOLUTION
                  ):
         '''
@@ -135,14 +136,21 @@ class WGANTrainer():
 
         # loss_gen = ...
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        self.optimizer_gen.zero_grad()
+
+        gen_imgs = self.model_gen(z)
+
+        loss_gen = -torch.mean(self.model_disc(gen_imgs))
+
+        loss_gen.backward()
+        self.optimizer_gen.step()
         ### END SOLUTION
 
         self.gen_loss_log.append(loss_gen.item())
 
     def disc_step(self,
                   ### BEGIN SOLUTION
-                  raise NotImplementedError()
+                  z, real_images
                   ### END SOLUTION
                   ):
         '''
@@ -158,7 +166,18 @@ class WGANTrainer():
         # loss_disc = ...
 
         ### BEGIN SOLUTION
-        raise NotImplementedError()
+        self.optimizer_disc.zero_grad()
+
+        fake_images = self.model_gen(z).detach()
+
+        real_output = self.model_disc(real_images)
+        fake_output = self.model_disc(fake_images)
+
+        loss_disc = -torch.mean(real_output) + torch.mean(fake_output)
+        loss_disc.backward()
+        self.optimizer_disc.step()
+        self.clamp_weights()
+
         ### END SOLUTION
         self.disc_loss_log.append(loss_disc.item())
 
@@ -174,7 +193,7 @@ class WGANTrainer():
             # pass the correct attributed into the disc_step
             self.disc_step(
                 ### BEGIN SOLUTION
-                raise NotImplementedError()
+                z, real_images
                 ### END SOLUTION
             )
             # optimization generator every n_disc_steps
@@ -186,7 +205,7 @@ class WGANTrainer():
                 # pass the correct attributed into the gen_step
                 self.gen_step(
                     ### BEGIN SOLUTION
-                    raise NotImplementedError()
+                    z
                     ### END SOLUTION
                 )
                 set_model_require_grad(self.model_disc, True)
