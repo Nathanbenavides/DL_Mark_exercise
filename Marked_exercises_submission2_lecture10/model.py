@@ -28,8 +28,8 @@ class GeneratorBlock(nn.Module):
         '''
         layers = []
         ### BEGIN SOLUTION
-        layers.append(nn.Upsample())
-        layers.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels,\
+        # layers.append(nn.Upsample())
+        layers.append(nn.ConvTranspose2d(in_channels=in_channels, out_channels=out_channels,\
                                 kernel_size=kernel_size, stride=stride, padding=padding))
         
         if batchnorm:
@@ -37,6 +37,7 @@ class GeneratorBlock(nn.Module):
         
         if activation:
             layers.append(nn.ReLU())
+
         ### END SOLUTION
         self.deconv_block = nn.Sequential(*layers)
 
@@ -65,7 +66,9 @@ class Generator(torch.nn.Module):
         # stride_sizes = [...]
         # padding_sizes = [...]
         ### BEGIN SOLUTION
-        # raise NotImplementedError()
+        kernel_sizes = [4, 4, 4, 4]
+        stride_sizes = [1, 2, 2, 2]
+        padding_sizes = [0, 1, 1, 1]
         ### END SOLUTION
 
         # filters: [1024, 512, 256]
